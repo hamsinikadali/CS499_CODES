@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
+
 
 // Function to remove leading zeros from a string representing a number
 void removeLeadingZero(char num[]) {
@@ -50,9 +52,18 @@ int main() {
     char num2[] = "987643221443489764384795643298746382985736482736487365847365874387458437564327";
     char result[1000];
 
+    clock_t start_time = clock(); // Record the start time
+
+    multiply(num1, num2, result);
+
+    clock_t end_time = clock(); // Record the end time
+    
     multiply(num1, num2, result);
 
     printf("The product of %s and %s is: %s\n", num1, num2, result);
+    
+    double execution_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printf("Execution Time: %f seconds\n", execution_time);
 
     return 0;
 }
