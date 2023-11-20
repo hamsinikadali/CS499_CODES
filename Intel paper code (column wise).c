@@ -74,17 +74,15 @@ int main()
     clock_t start_time, end_time;
     double execution_time;
 
-    start_time = clock();
-
     struct BigInteger num1 = initBigInteger("114701722186227725530857903247788731566117812708912875331083418612132595800326");
     struct BigInteger num2 = initBigInteger("987643221443489764384795643298746382985736482736487365847365874387458437564327");
-
+    
+    start_time = clock();
     struct BigInteger product_result = multiply(&num1, &num2);
-
-    printBigInteger(product_result);
 
     end_time = clock();
     execution_time = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+    printBigInteger(product_result);
 
     printf("Execution Time: %f seconds\n", execution_time);
 
