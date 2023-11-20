@@ -1,68 +1,58 @@
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 
-#define NUM_SIZE 80
-
-// Function to perform Urdhva Triyagbhyam multiplication for 128-bit numbers
-void urdhvaTriyagbhyamMultiply(int num1[], int num2[], int result[]) {
-    int carry = 0;
-
-    for (int i = 0; i < NUM_SIZE; ++i) {
-        for (int j = 0; j < NUM_SIZE; ++j) {
-            int product = num1[i] * num2[j] + result[i + j] + carry;
-
-            result[i + j] = product % 10; // Stores the result in the appropriate position
-            carry = product / 10; // Updates carry for the next iteration
-        }
-
-        while (carry) {
-            result[i + NUM_SIZE] += carry % 10;
-            carry /= 10;
+// Function to remove leading zeros from a string representing a number
+void removeLeadingZero(char num[]) {
+    int n = strlen(num) - 1;
+    int i;
+    for (i = 0; i < strlen(num) - 1; ++i) {
+        if (num[i] != '0') {
+            n = i;
+            break;
         }
     }
+
+    // Shifting the non-zero part to the beginning
+    memmove(num, num + n, strlen(num) - n);
+    num[strlen(num) - n] = '\0';
+}
+
+// Function to multiply two large numbers represented as strings
+char* multiply(char num1[], char num2[], char result[]) {
+    int len1 = strlen(num1);
+    int len2 = strlen(num2);
+
+    // Initializing the result array with zeros
+    for (int i = 0; i < len1 + len2; ++i) {
+        result[i] = '0';
+    }
+    result[len1 + len2] = '\0';
+
+    // Multiplying each digit and add to the result
+    for (int i = len1 - 1; i >= 0; --i) {
+        int carry = 0;
+        for (int j = len2 - 1; j >= 0; --j) {
+            int temp = (num1[i] - '0') * (num2[j] - '0') + (result[i + j + 1] - '0') + carry;
+            result[i + j + 1] = temp % 10 + '0';
+            carry = temp / 10;
+        }
+        result[i] += carry; // Add the carry to the current digit
+    }
+
+    // Removing leading zeros from the result
+    removeLeadingZero(result);
+
+    return result;
 }
 
 int main() {
-    // example
-    char num1Str[] = "114701722186227725530857903247788731566117812708912875331083418612132595800326";
-    char num2Str[] = "987643221443489764384795643298746382985736482736487365847365874387458437564327";
+    char num1[] = "114701722186227725530857903247788731566117812708912875331083418612132595800326";
+    char num2[] = "987643221443489764384795643298746382985736482736487365847365874387458437564327";
+    char result[1000];
 
-    int num1[NUM_SIZE], num2[NUM_SIZE], result[2 * NUM_SIZE] = {0};
+    multiply(num1, num2, result);
 
-    // Converting strings to integer arrays
-    // Converting strings to integer arrays
-    for (int i = 0; i < NUM_SIZE; ++i) {
-        num1[i] = num1Str[NUM_SIZE - 1 - i] - '0';
-        if (num1[i] < 0) {
-            num1[i] = 0;
-    }
-
-        num2[i] = num2Str[NUM_SIZE - 1 - i] - '0';
-        if (num2[i] < 0) {
-            num2[i] = 0;
-    }
-}
-
-
-    clock_t start_time = clock();
-
-    urdhvaTriyagbhyamMultiply(num1, num2, result);
-
-    clock_t end_time = clock();
-    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
-
-    printf("Result: ");
-    int startPrinting = 2 * NUM_SIZE - 1;
-    while (startPrinting > 0 && result[startPrinting] == 0) {
-        startPrinting--;
-    }
-    for (int i = startPrinting; i >= 4; --i) {
-        printf("%d", result[i]);
-    }
-
-
-    printf("\nTime taken: %f seconds\n", time_taken);
+    printf("The product of %s and %s is: %s\n", num1, num2, result);
 
     return 0;
 }
