@@ -36,13 +36,15 @@ num1 = BigInteger(
     "114701722186227725530857903247788731566117812708912875331083418612132595800326")
 num2 = BigInteger(
     "987643221443489764384795643298746382985736482736487365847365874387458437564327")
+start_time = time.time()
 
 product_result = num1 * num2
-print(product_result)
-
-
-start_time = time.time()
 end_time = time.time()
 
 execution_time = end_time - start_time
 print(f"Execution Time: {execution_time} seconds")
+
+print(product_result)
+
+
+
