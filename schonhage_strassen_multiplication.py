@@ -1,35 +1,44 @@
 import numpy as np
-import time
 
-class GFG:
-    a, b = 0, 0
-    def schonhage_strassen_multiplication():
-        a_digits = GFG.get_digits(GFG.a)
-        b_digits = GFG.get_digits(GFG.b)
+def strassen_multiply_128bit(A, B):
+    # Base case: If the matrices are 1x1, perform standard multiplication
+    if A.shape == (1, 1):
+        return A * B
 
-        result_fft = np.fft.fft(
-            a_digits + [0] * (len(a_digits) - 1)) * np.fft.fft(b_digits + [0] * (len(b_digits) - 1))
-        result = np.fft.ifft(result_fft).real.round().astype(int)
+    # Split matrices into quadrants
+    n = A.shape[0] // 2
+    A11 = A[:n, :n]
+    A12 = A[:n, n:]
+    A21 = A[n:, :n]
+    A22 = A[n:, n:]
 
-        # Handle carries
-        for i in range(len(result) - 1, 0, -1):
-            result[i - 1] += result[i] // 10
-            result[i] %= 10
+    B11 = B[:n, :n]
+    B12 = B[:n, n:]
+    B21 = B[n:, :n]
+    B22 = B[n:, n:]
 
-        product = int(''.join(map(str, result)))
-        print("\nThe Product is:", product)
+    # Recursive steps
+    P1 = strassen_multiply_128bit(A11 + A22, B11 + B22)
+    P2 = strassen_multiply_128bit(A21 + A22, B11)
+    P3 = strassen_multiply_128bit(A11, B12 - B22)
+    P4 = strassen_multiply_128bit(A22, B21 - B11)
+    P5 = strassen_multiply_128bit(A11 + A12, B22)
+    P6 = strassen_multiply_128bit(A21 - A11, B11 + B12)
+    P7 = strassen_multiply_128bit(A12 - A22, B21 + B22)
 
-    def get_digits(num):
-        # Converting the number to a list of digits
-        return [int(digit) for digit in str(num)]
+    # Calculating the resulting quadrants
+    C11 = P1 + P4 - P5 + P7
+    C12 = P3 + P5
+    C21 = P2 + P4
+    C22 = P1 - P2 + P3 + P6
 
+    # Combining quadrants to get the result
+    result = np.vstack((np.hstack((C11, C12)), np.hstack((C21, C22))))
 
-if __name__ == "__main__":
-    GFG.a = 114701722186227725530857903247788731566117812708912875331083418612132595800326
-    GFG.b = 987643221443489764384795643298746382985736482736487365847365874387458437564327
-    start_time = time.time()
-    GFG.schonhage_strassen_multiplication()
-    end_time = time.time()
-    execution_time = end_time - start_time
-    print(f"Execution Time: {execution_time} seconds")
+    return result
 
+A = np.array([[2**64, 2**64], [2**64, 2**64]], dtype=np.uint128)
+B = np.array([[2**64, 2**64], [2**64, 2**64]], dtype=np.uint128)
+
+result = strassen_multiply_128bit(A, B)
+print(result)
