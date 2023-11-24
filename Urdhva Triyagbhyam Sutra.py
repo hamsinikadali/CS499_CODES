@@ -58,15 +58,12 @@ if __name__ == "__main__":
 
     num1 = "114701722186227725530857903247788731566117812708912875331083418612132595800326"
     num2 = "987643221443489764384795643298746382985736482736487365847365874387458437564327"
-
+    start_time = time.time()
     result = solution.multiply(num1, num2)
+    end_time = time.time()
+
+    execution_time = end_time - start_time
+    print(f"Execution Time: {execution_time} seconds")
 
     print(f"The product of {num1} and {num2} is: {result}")
 
-
-start_time = time.time()
-# Run your algorithm here
-end_time = time.time()
-
-execution_time = end_time - start_time
-print(f"Execution Time: {execution_time} seconds")
